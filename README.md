@@ -1,1 +1,246 @@
 # unopanduo.github.io
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nick's Bio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0A0A0A;
+            color: #E2E8F0;
+            background: radial-gradient(circle at 10% 20%, #1A202C, #0A0A0A);
+            animation: pulse-bg 15s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulse-bg {
+            0% { background: radial-gradient(circle at 10% 20%, #1A202C, #0A0A0A); }
+            100% { background: radial-gradient(circle at 90% 80%, #171923, #0A0A0A); }
+        }
+
+        .container-card {
+            background-color: #1a1a1a;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 0 5px 10px rgba(0, 0, 0, 0.2);
+            border: 1px solid #2D3748;
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            animation: fade-in 1s ease-out;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bio-title {
+            font-family: 'Montserrat', sans-serif;
+            color: #C084FC; /* A deep purple */
+            text-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            color: #F87171; /* A soft red */
+        }
+
+        .link-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s, background-color 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+        }
+
+        .link-item:hover {
+            transform: translateY(-5px);
+            background-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .icon-svg {
+            color: #4A5568;
+            transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        .link-item:hover .icon-svg {
+            color: #C084FC;
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .username-link {
+            color: #C084FC;
+            text-decoration: underline;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .username-link:hover {
+            color: #F87171;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex items-center justify-center min-h-screen">
+
+    <div class="container-card p-6 sm:p-10 max-w-2xl w-full">
+
+        <!-- Header/Title -->
+        <div class="text-center mb-10 sm:mb-16">
+            <h1 class="text-4xl sm:text-6xl font-bold bio-title">PANDUO</h1>
+            <p class="mt-2 text-sm sm:text-base text-gray-400">Navigating the digital soundscape.</p>
+        </div>
+
+        <!-- Current Vibe Section -->
+        <div>
+            <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Current Vibe</h2>
+            <div class="w-full">
+                <!--
+                To change the song, just replace the URL in the 'src' attribute.
+                Example: src="https://open.spotify.com/embed/track/3n3oNrpq4R9aYp36oY0G7p"
+                -->
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/6Kq5x2g3q9x2N9t3G0W1D9" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+        </div>
+        
+        <!-- Bio Section -->
+        <hr class="border-gray-700 my-10">
+        <div class="mb-10">
+            <h2 class="text-2xl sm:text-3xl font-bold section-title mb-4">About Me</h2>
+            <p class="text-base leading-relaxed text-gray-300">
+                A creative spirit with a passion for both the digital and the hands-on. He/Him, born in August 2000. My world is a blend of exploring new music and diving into a variety of gaming worlds, always on the lookout for a fresh beat or a new challenge. This is my digital space to keep track of it all. My Reddit is kept private for Redditors only.
+            </p>
+        </div>
+        
+        <!-- Music Section -->
+        <hr class="border-gray-700 my-10">
+        <div>
+            <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Music</h2>
+            <div class="space-y-6">
+                <!-- Discogs -->
+                <a href="https://www.discogs.com/user/Pandae" target="_blank" class="flex items-center space-x-6 p-5 link-item">
+                    <span class="w-10 h-10 flex-shrink-0">
+                        <!-- Vinyl Record SVG -->
+                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M14.5 9.5a3.5 3.5 0 1 0-5 5"></path>
+                            <path d="M12 2v20"></path>
+                            <path d="M2 12h20"></path>
+                            <circle cx="12" cy="12" r="1.5" fill="currentColor"></circle>
+                        </svg>
+                    </span>
+                    <span class="text-lg font-medium">Discogs Profile | <span class="username-link">Pandae</span></span>
+                </a>
+
+                <!-- Apple Music -->
+                <a href="https://music.apple.com/profile/ThatsNicks" target="_blank" class="flex items-center space-x-6 p-5 link-item">
+                    <span class="w-10 h-10 flex-shrink-0">
+                        <!-- Headphone SVG -->
+                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v3z"></path>
+                            <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3z"></path>
+                        </svg>
+                    </span>
+                    <span class="text-lg font-medium">Apple Music Profile | <span class="username-link">ThatsNicks</span></span>
+                </a>
+
+                <!-- Last.fm -->
+                <a href="https://www.last.fm/user/ItsDapanda" target="_blank" class="flex items-center space-x-6 p-5 link-item">
+                    <span class="w-10 h-10 flex-shrink-0">
+                        <!-- Rewind SVG -->
+                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 19 2 12 11 5 11 19"></polygon>
+                            <polygon points="22 19 13 12 22 5 22 19"></polygon>
+                        </svg>
+                    </span>
+                    <span class="text-lg font-medium">ItsDapanda’s Music Profile | Last.fm</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Gaming Section -->
+        <hr class="border-gray-700 my-10">
+        <div>
+            <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Gaming</h2>
+            <div class="space-y-6">
+                <!-- Epic Games - Not Clickable -->
+                <div class="flex items-center space-x-6 p-5 link-item">
+                    <span class="w-10 h-10 flex-shrink-0">
+                        <!-- Game Controller SVG -->
+                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="10" rx="3"></rect>
+                            <path d="M6 10h.01"></path>
+                            <path d="M18 10h.01"></path>
+                            <path d="M6 14h.01"></path>
+                            <path d="M18 14h.01"></path>
+                            <path d="M11 12h2"></path>
+                            <path d="M12 11v2"></path>
+                        </svg>
+                    </span>
+                    <span class="text-lg font-medium">Fortnite / Epic | UnoPanduo</span>
+                </div>
+                <!-- Steam -->
+                <a href="https://steamcommunity.com/id/Panduo/" target="_blank" class="flex items-center space-x-6 p-5 link-item">
+                    <span class="w-10 h-10 flex-shrink-0">
+                        <!-- Game Controller SVG -->
+                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="10" rx="3"></rect>
+                            <path d="M6 10h.01"></path>
+                            <path d="M18 10h.01"></path>
+                            <path d="M6 14h.01"></path>
+                            <path d="M18 14h.01"></path>
+                            <path d="M11 12h2"></path>
+                            <path d="M12 11v2"></path>
+                        </svg>
+                    </span>
+                    <span class="text-lg font-medium">Steam Profile | <span class="username-link">Panduo</span></span>
+                </a>
+                <!-- EA -->
+                <a href="#" target="_blank" class="flex items-center space-x-6 p-5 link-item">
+                    <span class="w-10 h-10 flex-shrink-0">
+                        <!-- Game Controller SVG -->
+                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="10" rx="3"></rect>
+                            <path d="M6 10h.01"></path>
+                            <path d="M18 10h.01"></path>
+                            <path d="M6 14h.01"></path>
+                            <path d="M18 14h.01"></path>
+                            <path d="M11 12h2"></path>
+                            <path d="M12 11v2"></path>
+                        </svg>
+                    </span>
+                    <span class="text-lg font-medium">EA Profile | <span class="username-link">Not Provided</span></span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Social Section -->
+        <hr class="border-gray-700 my-10">
+        <div>
+            <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Socials</h2>
+            <div class="space-y-6">
+                <!-- Discord - No link -->
+                <div class="flex items-center space-x-6 p-5 link-item">
+                    <span class="text-lg font-medium">Discord | UnoPanduo</span>
+                </div>
+
+                <!-- YouTube -->
+                <a href="https://www.youtube.com/@UnoPanduo" target="_blank" class="flex items-center space-x-6 p-5 link-item">
+                    <span class="w-10 h-10 flex-shrink-0">
+                        <!-- Play SVG -->
+                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z"></path>
+                        </svg>
+                    </span>
+                    <span class="text-lg font-medium">YouTube Channel | <span class="username-link">@UnoPanduo</span></span>
+                </a>
+            </div>
+        </div>
+        
+
+    </div>
+</body>
+</html>
