@@ -1,9 +1,8 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nick's Bio</title>
+    <title>PANDUO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -91,15 +90,32 @@
             <p class="mt-2 text-sm sm:text-base text-gray-400">Navigeren door het digitale klanklandschap.</p>
         </div>
 
-        <!-- Current Vibe Section -->
+        <!-- Muziek & Vibe Sectie (nieuwe titel) -->
         <div>
-            <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Huidige Vibe</h2>
-            <div class="w-full">
-                <!--
-                Om het nummer te wijzigen, vervangt u gewoon de URL in het 'src' attribuut.
-                Voorbeeld: src="https://open.spotify.com/embed/track/3n3oNrpq4R9aYp36oY0G7p"
-                -->
-                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4vuJuTLFomqItDrn482nzV?si=9c2df75581774f6b" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Muziek & Vibe</h2>
+            <div class="w-full flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
+                <!-- Huidige Vibe - Spotify Embed (links) -->
+                <div class="w-full md:w-1/2">
+                    <h3 class="text-xl font-bold mb-4">Huidige Vibe</h3>
+                    <div class="w-full">
+                        <!-- Om het nummer te wijzigen, vervangt u gewoon de URL in het 'src' attribuut. -->
+                        <!-- Voorbeeld: src="https://open.spotify.com/embed/track/3n3oNrpq4R9aYp36oY0G7p" -->
+                        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/6Kq5x2g3q9x2N9t3G0W1D9" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <!-- Now Playing - Last.fm API (rechts) -->
+                <div class="w-full md:w-1/2">
+                    <h3 class="text-xl font-bold mb-4">Now Playing</h3>
+                    <div id="now-playing-container" class="flex flex-col items-center justify-center p-6 bg-gray-800 rounded-lg shadow-inner min-h-[152px]">
+                        <p id="now-playing-status" class="text-gray-400">Laden...</p>
+                        <img id="now-playing-image" class="hidden w-24 h-24 rounded-lg mb-4 shadow-md">
+                        <div id="now-playing-info" class="hidden text-center">
+                            <h4 id="now-playing-track" class="font-bold text-lg text-white"></h4>
+                            <p id="now-playing-artist" class="text-gray-300"></p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -237,8 +253,69 @@
                 </a>
             </div>
         </div>
-        
 
     </div>
+
+    <script>
+        // API-sleutel en gebruikersnaam voor Last.fm
+        const LASTFM_API_KEY = 'a1e23f2502881d4d5ce462128b81bb7b';
+        const LASTFM_USERNAME = 'ItsDapanda';
+
+        const nowPlayingContainer = document.getElementById('now-playing-container');
+        const nowPlayingStatus = document.getElementById('now-playing-status');
+        const nowPlayingImage = document.getElementById('now-playing-image');
+        const nowPlayingInfo = document.getElementById('now-playing-info');
+        const nowPlayingTrack = document.getElementById('now-playing-track');
+        const nowPlayingArtist = document.getElementById('now-playing-artist');
+
+        async function fetchNowPlaying() {
+            if (!LASTFM_API_KEY) {
+                nowPlayingStatus.textContent = "Last.fm API-sleutel ontbreekt. Vul deze in om 'Now Playing' te laten werken.";
+                return;
+            }
+
+            const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=1`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.error) {
+                    nowPlayingStatus.textContent = `Fout: ${data.message}`;
+                    return;
+                }
+
+                const track = data.recenttracks.track[0];
+
+                if (track && track['@attr'] && track['@attr'].nowplaying) {
+                    nowPlayingStatus.classList.add('hidden');
+                    nowPlayingInfo.classList.remove('hidden');
+
+                    nowPlayingTrack.textContent = track.name;
+                    nowPlayingArtist.textContent = track.artist['#text'];
+                    
+                    const albumArt = track.image.find(img => img.size === 'large');
+                    if (albumArt && albumArt['#text']) {
+                        nowPlayingImage.src = albumArt['#text'];
+                        nowPlayingImage.classList.remove('hidden');
+                    } else {
+                        nowPlayingImage.classList.add('hidden');
+                    }
+                } else {
+                    nowPlayingStatus.textContent = "Momenteel geen muziek aan het luisteren.";
+                    nowPlayingStatus.classList.remove('hidden');
+                    nowPlayingInfo.classList.add('hidden');
+                    nowPlayingImage.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error("Fout bij het ophalen van Last.fm-gegevens:", error);
+                nowPlayingStatus.textContent = "Kan geen verbinding maken met Last.fm. Probeer het later opnieuw.";
+            }
+        }
+
+        // Haal direct de gegevens op en herhaal elke 30 seconden
+        fetchNowPlaying();
+        setInterval(fetchNowPlaying, 30000);
+    </script>
 </body>
 </html>
