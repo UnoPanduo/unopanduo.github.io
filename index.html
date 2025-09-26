@@ -120,8 +120,8 @@
                     <div class="w-full md:w-1/2">
                         <h3 class="text-xl font-bold mb-4">Huidige Vibe</h3>
                         <div class="w-full">
-                            <!-- Spotify Embed met nieuwe URI en compacte weergave (hoogte 100) -->
-                            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4wxJZae52sNfAx6K5FTajL" width="100%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                            <!-- Spotify Embed: ID toegevoegd, src wordt ingesteld via JS -->
+                            <iframe id="spotify-embed-nl" style="border-radius:12px" src="" width="100%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                         </div>
                     </div>
 
@@ -252,8 +252,8 @@
                     <div class="w-full md:w-1/2">
                         <h3 class="text-xl font-bold mb-4">Current Vibe</h3>
                         <div class="w-full">
-                            <!-- Spotify Embed met nieuwe URI en compacte weergave (hoogte 100) -->
-                            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4wxJZae52sNfAx6K5FTajL" width="100%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                            <!-- Spotify Embed: ID toegevoegd, src wordt ingesteld via JS -->
+                            <iframe id="spotify-embed-en" style="border-radius:12px" src="" width="100%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                         </div>
                     </div>
 
@@ -357,12 +357,12 @@
                     <!-- YouTube -->
                     <a href="https://www.youtube.com/@UnoPanduo" target="_blank" class="flex items-center space-x-6 p-5 link-item">
                         <span class="w-10 h-10 flex-shrink-0">
-                            <!-- Play SVG -->
+                            <!-- Afspelen SVG -->
                             <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M8 5v14l11-7z"></path>
                             </svg>
                         </span>
-                        <span class="text-lg font-medium">YouTube Channel | <span class="username-link">@UnoPanduo</span></span>
+                        <span class="text-lg font-medium">YouTube-kanaal | <span class="username-link">@UnoPanduo</span></span>
                     </a>
                 </div>
             </div>
@@ -370,7 +370,11 @@
     </div>
     
     <script>
-        // API-sleutel en gebruikersnaam voor Last.fm
+        // 🎼 PAS DEZE VARIABELE AAN OM DE SPOTIFY TRACK TE WIJZIGEN
+        const SPOTIFY_URI = '4wxJZae52sNfAx6K5FTajL';
+        // -----------------------------------------------------------
+
+        const SPOTIFY_BASE_URL = 'https://open.spotify.com/embed/track/';
         const LASTFM_API_KEY = 'a1e23f2502881d4d5ce462128b81bb7b';
         const LASTFM_USERNAME = 'ItsDapanda';
         
@@ -462,11 +466,18 @@
         
         // Initialisatie
         document.addEventListener('DOMContentLoaded', () => {
-            // Engels is de standaardtaal als er geen eerdere voorkeur is opgeslagen
+            // 1. Stel de Spotify URI in voor beide iframes
+            const nlIframe = document.getElementById('spotify-embed-nl');
+            const enIframe = document.getElementById('spotify-embed-en');
+
+            if (nlIframe) nlIframe.src = SPOTIFY_BASE_URL + SPOTIFY_URI;
+            if (enIframe) enIframe.src = SPOTIFY_BASE_URL + SPOTIFY_URI;
+
+            // 2. Stel de taal in
             const savedLang = localStorage.getItem('language') || 'en'; 
             toggleLanguage(savedLang);
 
-            // Haal direct de gegevens op en herhaal elke 30 seconden
+            // 3. Haal Last.fm-gegevens op
             fetchLastFmStatus();
             setInterval(fetchLastFmStatus, 30000);
         });
