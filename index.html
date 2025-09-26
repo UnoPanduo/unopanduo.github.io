@@ -78,244 +78,397 @@
         .username-link:hover {
             color: #F87171;
         }
+
+        .language-button {
+            background-color: #C084FC;
+            color: #1A202C;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            transition: background-color 0.3s;
+        }
+
+        .language-button:hover {
+            background-color: #DDAAFA;
+        }
     </style>
 </head>
 <body class="p-4 sm:p-8">
 
     <div class="container-card p-6 sm:p-10 max-w-2xl w-full mx-auto">
-
-        <!-- Header/Title -->
-        <div class="text-center mb-10 sm:mb-16">
-            <h1 class="text-4xl sm:text-6xl font-bold bio-title">PANDUO</h1>
-            <p class="mt-2 text-sm sm:text-base text-gray-400">Navigeren door het digitale klanklandschap.</p>
+        
+        <!-- Language Switch Button (Gedeeld voor beide talen) -->
+        <div class="flex justify-end mb-6">
+            <button id="lang-toggle-nl" class="language-button" onclick="toggleLanguage('en')">English Version</button>
+            <button id="lang-toggle-en" class="language-button hidden" onclick="toggleLanguage('nl')">Nederlandse Versie</button>
         </div>
 
-        <!-- Muziek & Vibe Sectie (nieuwe titel) -->
-        <div>
-            <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Muziek & Vibe</h2>
-            <div class="w-full flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
-                <!-- Huidige Vibe - Spotify Embed (links) -->
-                <div class="w-full md:w-1/2">
-                    <h3 class="text-xl font-bold mb-4">Huidige Vibe</h3>
-                    <div class="w-full">
-                        <!-- Om het nummer te wijzigen, vervangt u gewoon de URL in het 'src' attribuut. -->
-                        <!-- Voorbeeld: src="https://open.spotify.com/embed/track/3n3oNrpq4R9aYp36oY0G7p" -->
-                        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/6Kq5x2g3q9x2N9t3G0W1D9" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                    </div>
-                </div>
+        <!-- NEDERLANDSE INHOUD -->
+        <div id="dutch-content">
+            <!-- Header/Title -->
+            <div class="text-center mb-10 sm:mb-16">
+                <h1 class="text-4xl sm:text-6xl font-bold bio-title">PANDUO</h1>
+                <p class="mt-2 text-sm sm:text-base text-gray-400">Navigeren door het digitale klanklandschap.</p>
+            </div>
 
-                <!-- Now Playing - Last.fm API (rechts) -->
-                <div class="w-full md:w-1/2">
-                    <h3 class="text-xl font-bold mb-4">Now Playing</h3>
-                    <div id="now-playing-container" class="flex flex-col items-center justify-center p-6 bg-gray-800 rounded-lg shadow-inner min-h-[152px]">
-                        <p id="now-playing-status" class="text-gray-400">Laden...</p>
-                        <img id="now-playing-image" class="hidden w-24 h-24 rounded-lg mb-4 shadow-md">
-                        <div id="now-playing-info" class="hidden text-center">
-                            <h4 id="now-playing-track" class="font-bold text-lg text-white"></h4>
-                            <p id="now-playing-artist" class="text-gray-300"></p>
+            <!-- Muziek & Vibe Sectie -->
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Muziek & Vibe</h2>
+                <div class="w-full flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
+                    <!-- Huidige Vibe - Spotify Embed (links) -->
+                    <div class="w-full md:w-1/2">
+                        <h3 class="text-xl font-bold mb-4">Huidige Vibe</h3>
+                        <div class="w-full">
+                            <!-- Om het nummer te wijzigen, vervangt u gewoon de URL in het 'src' attribuut. -->
+                            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4wxJZae52sNfAx6K5FTajL" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                        </div>
+                    </div>
+
+                    <!-- Now Playing - Last.fm API (rechts) -->
+                    <div class="w-full md:w-1/2">
+                        <h3 class="text-xl font-bold mb-4">Now Playing (Muziek)</h3>
+                        <div id="now-playing-container-nl" class="flex flex-col items-center justify-center p-6 bg-gray-800 rounded-lg shadow-inner min-h-[152px]">
+                            <p id="now-playing-status-nl" class="text-gray-400">Laden...</p>
+                            <div id="now-playing-info-nl" class="hidden text-center">
+                                <h4 id="now-playing-track-nl" class="font-bold text-lg text-white"></h4>
+                                <p id="now-playing-artist-nl" class="text-gray-300"></p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Bio Section -->
-        <hr class="border-gray-700 my-10">
-        <div class="mb-10">
-            <h2 class="text-2xl sm:text-3xl font-bold section-title mb-4">Over mij</h2>
-            <p class="text-base leading-relaxed text-gray-300">
-                Een creatieve geest met een passie voor zowel het digitale als het hands-on. Hij/Hem, geboren in augustus 2000. Mijn wereld is een mix van het verkennen van nieuwe muziek en het duiken in een verscheidenheid aan gamingwerelden, altijd op zoek naar een nieuwe beat of een nieuwe uitdaging. Dit is mijn digitale ruimte om alles bij te houden. Mijn Reddit is privé voor Redditors.
-            </p>
-        </div>
-        
-        <!-- Music Section -->
-        <hr class="border-gray-700 my-10">
-        <div>
-            <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Muziek</h2>
-            <div class="space-y-6">
-                <!-- Discogs -->
-                <a href="https://www.discogs.com/user/Pandae" target="_blank" class="flex items-center space-x-6 p-5 link-item">
-                    <span class="w-10 h-10 flex-shrink-0">
-                        <!-- Vinyl Record SVG -->
-                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <path d="M14.5 9.5a3.5 3.5 0 1 0-5 5"></path>
-                            <path d="M12 2v20"></path>
-                            <path d="M2 12h20"></path>
-                            <circle cx="12" cy="12" r="1.5" fill="currentColor"></circle>
-                        </svg>
-                    </span>
-                    <span class="text-lg font-medium">Discogs Profiel | <span class="username-link">Pandae</span></span>
-                </a>
-
-                <!-- Apple Music -->
-                <a href="https://music.apple.com/profile/ThatsNicks" target="_blank" class="flex items-center space-x-6 p-5 link-item">
-                    <span class="w-10 h-10 flex-shrink-0">
-                        <!-- Hoofdtelefoon SVG -->
-                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
-                            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v3z"></path>
-                            <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3z"></path>
-                        </svg>
-                    </span>
-                    <span class="text-lg font-medium">Apple Music Profiel | <span class="username-link">ThatsNicks</span></span>
-                </a>
-
-                <!-- Last.fm -->
-                <a href="https://www.last.fm/user/ItsDapanda" target="_blank" class="flex items-center space-x-6 p-5 link-item">
-                    <span class="w-10 h-10 flex-shrink-0">
-                        <!-- Terugspoelen SVG -->
-                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="11 19 2 12 11 5 11 19"></polygon>
-                            <polygon points="22 19 13 12 22 5 22 19"></polygon>
-                        </svg>
-                    </span>
-                    <span class="text-lg font-medium">ItsDapanda's Muziekprofiel | Last.fm</span>
-                </a>
+            
+            <!-- Bio Section -->
+            <hr class="border-gray-700 my-10">
+            <div class="mb-10">
+                <h2 class="text-2xl sm:text-3xl font-bold section-title mb-4">Over mij</h2>
+                <p class="text-base leading-relaxed text-gray-300">
+                    Een creatieve geest met een passie voor zowel het digitale als het hands-on. Hij/Hem, geboren in augustus 2000. Mijn wereld is een mix van het verkennen van nieuwe muziek en het duiken in een verscheidenheid aan gamingwerelden, altijd op zoek naar een nieuwe beat of een nieuwe uitdaging. Dit is mijn digitale ruimte om alles bij te houden. Mijn Reddit is privé voor Redditors.
+                </p>
             </div>
-        </div>
-        
-        <!-- Gaming Section -->
-        <hr class="border-gray-700 my-10">
-        <div>
-            <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Gaming</h2>
-            <div class="space-y-6">
-                <!-- Epic Games - Not Clickable -->
-                <div class="flex items-center space-x-6 p-5 link-item">
-                    <span class="w-10 h-10 flex-shrink-0">
-                        <!-- Spelcontroller SVG -->
-                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="7" width="20" height="10" rx="3"></rect>
-                            <path d="M6 10h.01"></path>
-                            <path d="M18 10h.01"></path>
-                            <path d="M6 14h.01"></path>
-                            <path d="M18 14h.01"></path>
-                            <path d="M11 12h2"></path>
-                            <path d="M12 11v2"></path>
-                        </svg>
-                    </span>
-                    <span class="text-lg font-medium">Fortnite / Epic | UnoPanduo</span>
+
+            <!-- Gaming Section -->
+            <hr class="border-gray-700 my-10">
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Gaming</h2>
+                <div class="space-y-6">
+                    <!-- Now Playing (Gaming) -->
+                    <div class="flex flex-col items-center justify-center p-6 link-item text-center">
+                        <span class="text-2xl font-bold">Now Playing (Gaming)</span>
+                        <p class="text-xs text-gray-400 mt-2">
+                            Kan niet live updaten. Bekijk mijn profiel op <a href="https://steamcommunity.com/id/Panduo/" target="_blank" class="username-link">Steam</a>.
+                        </p>
+                    </div>
+                    
+                    <!-- Epic Games - Not Clickable -->
+                    <div class="flex items-center space-x-6 p-5 link-item">
+                        <span class="w-10 h-10 flex-shrink-0">
+                            <!-- Spelcontroller SVG -->
+                            <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="7" width="20" height="10" rx="3"></rect>
+                                <path d="M6 10h.01"></path>
+                                <path d="M18 10h.01"></path>
+                                <path d="M6 14h.01"></path>
+                                <path d="M18 14h.01"></path>
+                                <path d="M11 12h2"></path>
+                                <path d="M12 11v2"></path>
+                            </svg>
+                        </span>
+                        <span class="text-lg font-medium">Fortnite / Epic | UnoPanduo</span>
+                    </div>
+                    <!-- Steam -->
+                    <a href="https://steamcommunity.com/id/Panduo/" target="_blank" class="flex items-center space-x-6 p-5 link-item">
+                        <span class="w-10 h-10 flex-shrink-0">
+                            <!-- Spelcontroller SVG -->
+                            <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="7" width="20" height="10" rx="3"></rect>
+                                <path d="M6 10h.01"></path>
+                                <path d="M18 10h.01"></path>
+                                <path d="M6 14h.01"></path>
+                                <path d="M18 14h.01"></path>
+                                <path d="M11 12h2"></path>
+                                <path d="M12 11v2"></path>
+                            </svg>
+                        </span>
+                        <span class="text-lg font-medium">Steam Profiel | <span class="username-link">Panduo</span></span>
+                    </a>
+                    <!-- EA -->
+                    <a href="#" target="_blank" class="flex items-center space-x-6 p-5 link-item">
+                        <span class="w-10 h-10 flex-shrink-0">
+                            <!-- Spelcontroller SVG -->
+                            <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="7" width="20" height="10" rx="3"></rect>
+                                <path d="M6 10h.01"></path>
+                                <path d="M18 10h.01"></path>
+                                <path d="M6 14h.01"></path>
+                                <path d="M18 14h.01"></path>
+                                <path d="M11 12h2"></path>
+                                <path d="M12 11v2"></path>
+                            </svg>
+                        </span>
+                        <span class="text-lg font-medium">EA Profiel | <span class="username-link">Niet verstrekt</span></span>
+                    </a>
                 </div>
-                <!-- Steam -->
-                <a href="https://steamcommunity.com/id/Panduo/" target="_blank" class="flex items-center space-x-6 p-5 link-item">
-                    <span class="w-10 h-10 flex-shrink-0">
-                        <!-- Spelcontroller SVG -->
-                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="7" width="20" height="10" rx="3"></rect>
-                            <path d="M6 10h.01"></path>
-                            <path d="M18 10h.01"></path>
-                            <path d="M6 14h.01"></path>
-                            <path d="M18 14h.01"></path>
-                            <path d="M11 12h2"></path>
-                            <path d="M12 11v2"></path>
-                        </svg>
-                    </span>
-                    <span class="text-lg font-medium">Steam Profiel | <span class="username-link">Panduo</span></span>
-                </a>
-                <!-- EA -->
-                <a href="#" target="_blank" class="flex items-center space-x-6 p-5 link-item">
-                    <span class="w-10 h-10 flex-shrink-0">
-                        <!-- Spelcontroller SVG -->
-                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="7" width="20" height="10" rx="3"></rect>
-                            <path d="M6 10h.01"></path>
-                            <path d="M18 10h.01"></path>
-                            <path d="M6 14h.01"></path>
-                            <path d="M18 14h.01"></path>
-                            <path d="M11 12h2"></path>
-                            <path d="M12 11v2"></path>
-                        </svg>
-                    </span>
-                    <span class="text-lg font-medium">EA Profiel | <span class="username-link">Niet verstrekt</span></span>
-                </a>
             </div>
-        </div>
 
-        <!-- Social Section -->
-        <hr class="border-gray-700 my-10">
-        <div>
-            <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Socials</h2>
-            <div class="space-y-6">
-                <!-- Discord - No link -->
-                <div class="flex items-center space-x-6 p-5 link-item">
-                    <span class="text-lg font-medium">Discord | UnoPanduo</span>
+            <!-- Social Section -->
+            <hr class="border-gray-700 my-10">
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Socials</h2>
+                <div class="space-y-6">
+                    <!-- Discord - No link -->
+                    <div class="flex items-center space-x-6 p-5 link-item">
+                        <span class="text-lg font-medium">Discord | UnoPanduo</span>
+                    </div>
+
+                    <!-- YouTube -->
+                    <a href="https://www.youtube.com/@UnoPanduo" target="_blank" class="flex items-center space-x-6 p-5 link-item">
+                        <span class="w-10 h-10 flex-shrink-0">
+                            <!-- Afspelen SVG -->
+                            <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5v14l11-7z"></path>
+                            </svg>
+                        </span>
+                        <span class="text-lg font-medium">YouTube-kanaal | <span class="username-link">@UnoPanduo</span></span>
+                    </a>
                 </div>
-
-                <!-- YouTube -->
-                <a href="https://www.youtube.com/@UnoPanduo" target="_blank" class="flex items-center space-x-6 p-5 link-item">
-                    <span class="w-10 h-10 flex-shrink-0">
-                        <!-- Afspelen SVG -->
-                        <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M8 5v14l11-7z"></path>
-                        </svg>
-                    </span>
-                    <span class="text-lg font-medium">YouTube-kanaal | <span class="username-link">@UnoPanduo</span></span>
-                </a>
             </div>
         </div>
+        
+        <!-- ENGELSE INHOUD -->
+        <div id="english-content" class="hidden">
+            <!-- Header/Title -->
+            <div class="text-center mb-10 sm:mb-16">
+                <h1 class="text-4xl sm:text-6xl font-bold bio-title">PANDUO</h1>
+                <p class="mt-2 text-sm sm:text-base text-gray-400">Navigating the digital soundscape.</p>
+            </div>
 
+            <!-- Music & Vibe Section -->
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Music & Vibe</h2>
+                <div class="w-full flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
+                    <!-- Current Vibe - Spotify Embed (links) -->
+                    <div class="w-full md:w-1/2">
+                        <h3 class="text-xl font-bold mb-4">Current Vibe</h3>
+                        <div class="w-full">
+                            <!-- To change the song, simply replace the URL in the 'src' attribute. -->
+                            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/6Kq5x2g3q9x2N9t3G0W1D9" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                        </div>
+                    </div>
+
+                    <!-- Now Playing - Last.fm API (rechts) -->
+                    <div class="w-full md:w-1/2">
+                        <h3 class="text-xl font-bold mb-4">Now Playing (Music)</h3>
+                        <div id="now-playing-container-en" class="flex flex-col items-center justify-center p-6 bg-gray-800 rounded-lg shadow-inner min-h-[152px]">
+                            <p id="now-playing-status-en" class="text-gray-400">Loading...</p>
+                            <div id="now-playing-info-en" class="hidden text-center">
+                                <h4 id="now-playing-track-en" class="font-bold text-lg text-white"></h4>
+                                <p id="now-playing-artist-en" class="text-gray-300"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bio Section -->
+            <hr class="border-gray-700 my-10">
+            <div class="mb-10">
+                <h2 class="text-2xl sm:text-3xl font-bold section-title mb-4">About Me</h2>
+                <p class="text-base leading-relaxed text-gray-300">
+                    A creative mind with a passion for both the digital and the hands-on. He/Him, born in August 2000. My world is a blend of exploring new music and diving into a variety of gaming realms, always looking for a new beat or a new challenge. This is my digital space to keep track of everything. My Reddit is private for Redditors.
+                </p>
+            </div>
+
+            <!-- Gaming Section -->
+            <hr class="border-gray-700 my-10">
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Gaming</h2>
+                <div class="space-y-6">
+                    <!-- Now Playing (Gaming) -->
+                    <div class="flex flex-col items-center justify-center p-6 link-item text-center">
+                        <span class="text-2xl font-bold">Now Playing (Gaming)</span>
+                        <p class="text-xs text-gray-400 mt-2">
+                            Cannot update live. View my profile on <a href="https://steamcommunity.com/id/Panduo/" target="_blank" class="username-link">Steam</a>.
+                        </p>
+                    </div>
+                    
+                    <!-- Epic Games - Not Clickable -->
+                    <div class="flex items-center space-x-6 p-5 link-item">
+                        <span class="w-10 h-10 flex-shrink-0">
+                            <!-- Game Controller SVG -->
+                            <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="7" width="20" height="10" rx="3"></rect>
+                                <path d="M6 10h.01"></path>
+                                <path d="M18 10h.01"></path>
+                                <path d="M6 14h.01"></path>
+                                <path d="M18 14h.01"></path>
+                                <path d="M11 12h2"></path>
+                                <path d="M12 11v2"></path>
+                            </svg>
+                        </span>
+                        <span class="text-lg font-medium">Fortnite / Epic | UnoPanduo</span>
+                    </div>
+                    <!-- Steam -->
+                    <a href="https://steamcommunity.com/id/Panduo/" target="_blank" class="flex items-center space-x-6 p-5 link-item">
+                        <span class="w-10 h-10 flex-shrink-0">
+                            <!-- Game Controller SVG -->
+                            <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="7" width="20" height="10" rx="3"></rect>
+                                <path d="M6 10h.01"></path>
+                                <path d="M18 10h.01"></path>
+                                <path d="M6 14h.01"></path>
+                                <path d="M18 14h.01"></path>
+                                <path d="M11 12h2"></path>
+                                <path d="M12 11v2"></path>
+                            </svg>
+                        </span>
+                        <span class="text-lg font-medium">Steam Profile | <span class="username-link">Panduo</span></span>
+                    </a>
+                    <!-- EA -->
+                    <a href="#" target="_blank" class="flex items-center space-x-6 p-5 link-item">
+                        <span class="w-10 h-10 flex-shrink-0">
+                            <!-- Game Controller SVG -->
+                            <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="7" width="20" height="10" rx="3"></rect>
+                                <path d="M6 10h.01"></path>
+                                <path d="M18 10h.01"></path>
+                                <path d="M6 14h.01"></path>
+                                <path d="M18 14h.01"></path>
+                                <path d="M11 12h2"></path>
+                                <path d="M12 11v2"></path>
+                            </svg>
+                        </span>
+                        <span class="text-lg font-medium">EA Profile | <span class="username-link">Not provided</span></span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Social Section -->
+            <hr class="border-gray-700 my-10">
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Socials</h2>
+                <div class="space-y-6">
+                    <!-- Discord - No link -->
+                    <div class="flex items-center space-x-6 p-5 link-item">
+                        <span class="text-lg font-medium">Discord | UnoPanduo</span>
+                    </div>
+
+                    <!-- YouTube -->
+                    <a href="https://www.youtube.com/@UnoPanduo" target="_blank" class="flex items-center space-x-6 p-5 link-item">
+                        <span class="w-10 h-10 flex-shrink-0">
+                            <!-- Play SVG -->
+                            <svg class="icon-svg w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5v14l11-7z"></path>
+                            </svg>
+                        </span>
+                        <span class="text-lg font-medium">YouTube Channel | <span class="username-link">@UnoPanduo</span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-
+    
     <script>
         // API-sleutel en gebruikersnaam voor Last.fm
         const LASTFM_API_KEY = 'a1e23f2502881d4d5ce462128b81bb7b';
         const LASTFM_USERNAME = 'ItsDapanda';
+        
+        // Functie om de taal te wisselen
+        function toggleLanguage(lang) {
+            const dutchContent = document.getElementById('dutch-content');
+            const englishContent = document.getElementById('english-content');
+            const toggleNl = document.getElementById('lang-toggle-nl');
+            const toggleEn = document.getElementById('lang-toggle-en');
 
-        const nowPlayingContainer = document.getElementById('now-playing-container');
-        const nowPlayingStatus = document.getElementById('now-playing-status');
-        const nowPlayingImage = document.getElementById('now-playing-image');
-        const nowPlayingInfo = document.getElementById('now-playing-info');
-        const nowPlayingTrack = document.getElementById('now-playing-track');
-        const nowPlayingArtist = document.getElementById('now-playing-artist');
-
-        async function fetchNowPlaying() {
-            if (!LASTFM_API_KEY) {
-                nowPlayingStatus.textContent = "Last.fm API-sleutel ontbreekt. Vul deze in om 'Now Playing' te laten werken.";
-                return;
-            }
-
-            const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=1`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data.error) {
-                    nowPlayingStatus.textContent = `Fout: ${data.message}`;
-                    return;
-                }
-
-                const track = data.recenttracks.track[0];
-
-                if (track && track['@attr'] && track['@attr'].nowplaying) {
-                    nowPlayingStatus.classList.add('hidden');
-                    nowPlayingInfo.classList.remove('hidden');
-
-                    nowPlayingTrack.textContent = track.name;
-                    nowPlayingArtist.textContent = track.artist['#text'];
-                    
-                    const albumArt = track.image.find(img => img.size === 'large');
-                    if (albumArt && albumArt['#text']) {
-                        nowPlayingImage.src = albumArt['#text'];
-                        nowPlayingImage.classList.remove('hidden');
-                    } else {
-                        nowPlayingImage.classList.add('hidden');
-                    }
-                } else {
-                    nowPlayingStatus.textContent = "Momenteel geen muziek aan het luisteren.";
-                    nowPlayingStatus.classList.remove('hidden');
-                    nowPlayingInfo.classList.add('hidden');
-                    nowPlayingImage.classList.add('hidden');
-                }
-            } catch (error) {
-                console.error("Fout bij het ophalen van Last.fm-gegevens:", error);
-                nowPlayingStatus.textContent = "Kan geen verbinding maken met Last.fm. Probeer het later opnieuw.";
+            if (lang === 'en') {
+                dutchContent.classList.add('hidden');
+                englishContent.classList.remove('hidden');
+                toggleNl.classList.add('hidden');
+                toggleEn.classList.remove('hidden');
+                localStorage.setItem('language', 'en');
+            } else {
+                dutchContent.classList.remove('hidden');
+                englishContent.classList.add('hidden');
+                toggleNl.classList.remove('hidden');
+                toggleEn.classList.add('hidden');
+                localStorage.setItem('language', 'nl');
             }
         }
 
-        // Haal direct de gegevens op en herhaal elke 30 seconden
-        fetchNowPlaying();
-        setInterval(fetchNowPlaying, 30000);
+        // Functie om de Last.fm status op te halen en beide taalblokken bij te werken
+        async function fetchLastFmStatus() {
+            try {
+                const response = await fetch(`https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=1`);
+                const data = await response.json();
+                
+                // Elementen voor Nederlandse status
+                const statusNl = document.getElementById('now-playing-status-nl');
+                const infoNl = document.getElementById('now-playing-info-nl');
+                const trackNl = document.getElementById('now-playing-track-nl');
+                const artistNl = document.getElementById('now-playing-artist-nl');
+                
+                // Elementen voor Engelse status
+                const statusEn = document.getElementById('now-playing-status-en');
+                const infoEn = document.getElementById('now-playing-info-en');
+                const trackEn = document.getElementById('now-playing-track-en');
+                const artistEn = document.getElementById('now-playing-artist-en');
+        
+                let isPlaying = false;
+                let trackName = '';
+                let artistName = '';
+
+                if (data.recenttracks && data.recenttracks.track && data.recenttracks.track.length > 0) {
+                    const track = data.recenttracks.track[0];
+                    if (track['@attr'] && track['@attr'].nowplaying) {
+                        isPlaying = true;
+                        trackName = track.name;
+                        artistName = track.artist['#text'];
+                    }
+                } 
+
+                // Update Nederlandse elementen
+                if (isPlaying) {
+                    statusNl.classList.add('hidden');
+                    infoNl.classList.remove('hidden');
+                    trackNl.textContent = trackName;
+                    artistNl.textContent = artistName;
+                } else {
+                    statusNl.textContent = data.recenttracks && data.recenttracks.track ? 'Speelt momenteel niets.' : 'Geen recente tracks gevonden.';
+                    infoNl.classList.add('hidden');
+                    statusNl.classList.remove('hidden');
+                }
+
+                // Update Engelse elementen
+                if (isPlaying) {
+                    statusEn.classList.add('hidden');
+                    infoEn.classList.remove('hidden');
+                    trackEn.textContent = trackName;
+                    artistEn.textContent = artistName;
+                } else {
+                    statusEn.textContent = data.recenttracks && data.recenttracks.track ? 'Not playing anything right now.' : 'No recent tracks found.';
+                    infoEn.classList.add('hidden');
+                    statusEn.classList.remove('hidden');
+                }
+
+            } catch (error) {
+                console.error("Fout bij het ophalen van Last.fm-gegevens:", error);
+                document.getElementById('now-playing-status-nl').textContent = "Fout bij het laden van gegevens.";
+                document.getElementById('now-playing-info-nl').classList.add('hidden');
+                document.getElementById('now-playing-status-en').textContent = "Error loading data.";
+                document.getElementById('now-playing-info-en').classList.add('hidden');
+            }
+        }
+        
+        // Initialisatie
+        document.addEventListener('DOMContentLoaded', () => {
+            // Engels is nu de standaardtaal als er geen eerdere voorkeur is opgeslagen
+            const savedLang = localStorage.getItem('language') || 'en'; 
+            toggleLanguage(savedLang);
+
+            // Haal direct de gegevens op en herhaal elke 30 seconden
+            fetchLastFmStatus();
+            setInterval(fetchLastFmStatus, 30000);
+        });
     </script>
 </body>
 </html>
