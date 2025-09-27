@@ -94,7 +94,7 @@
             background-color: #DDAAFA;
         }
         
-        /* Full-screen Overlay Styling */
+        /* Full-screen Overlay Styling (Verbeterd) */
         #fullscreen-overlay {
             position: fixed;
             top: 0;
@@ -102,7 +102,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px); /* Iets meer blur voor de sfeer */
             z-index: 50;
             transition: opacity 0.3s ease;
         }
@@ -134,13 +134,33 @@
             background-color: #0A0A0A;
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            border: 2px solid #C084FC;
+            border: 3px solid #F87171; /* Paars naar zacht rood */
+        }
+
+        /* Fullscreen Title Styling */
+        .fullscreen-title {
+            font-family: 'Montserrat', sans-serif;
+            color: #E2E8F0;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Last Check Time Display in Fullscreen */
+        #fullscreen-check-time {
+            color: #9CA3AF; /* Grijs */
+            background-color: rgba(45, 55, 72, 0.7); /* Donkere achtergrond */
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem; /* Small */
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
         }
     </style>
 </head>
 <body class="p-4 sm:p-8">
 
-    <!-- FULLSCREEN LP OVERLAY -->
+    <!-- FULLSCREEN LP OVERLAY (VERBETERD) -->
     <div id="fullscreen-overlay" class="hidden flex flex-col items-center justify-center p-8">
         <button onclick="toggleFullscreenPlayer(false)" class="absolute top-4 right-4 p-3 rounded-full bg-gray-700/50 hover:bg-gray-700 transition">
             <!-- Close Icon (X) -->
@@ -149,16 +169,21 @@
             </svg>
         </button>
 
-        <div class="text-center max-w-lg w-full">
-            <!-- LP Disk -->
-            <div class="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto mb-8">
+        <div class="text-center max-w-xl w-full">
+             <!-- LP Disk -->
+            <div class="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto mb-10">
                 <img id="lp-art" class="lp-disk w-full h-full object-cover" src="" alt="Album Art LP">
             </div>
 
             <!-- Track Info -->
-            <h4 id="lp-track" class="font-bold text-2xl sm:text-3xl text-white truncate px-4"></h4>
-            <p id="lp-artist" class="text-gray-300 text-lg sm:text-xl truncate px-4 mb-2"></p>
-            <p id="lp-source" class="text-sm text-purple-400 font-medium"></p>
+            <h4 id="lp-track" class="fullscreen-title font-extrabold text-3xl sm:text-5xl text-white truncate px-4 mb-2"></h4>
+            <p id="lp-artist" class="text-gray-300 text-xl sm:text-2xl truncate px-4 mb-4"></p>
+            <p id="lp-source" class="text-md text-red-400 font-medium bg-gray-800/50 inline-block px-3 py-1 rounded-full"></p>
+        </div>
+        
+        <!-- API Check Tijd in Fullscreen -->
+        <div id="fullscreen-check-time">
+            Laatste check: <span id="fullscreen-last-check">...</span>
         </div>
     </div>
     <!-- EINDE FULLSCREEN LP OVERLAY -->
@@ -485,10 +510,11 @@
         const LASTFM_USERNAME = 'ItsDapanda';
         
         // Timerinstellingen
-        const API_POLLING_INTERVAL = 10000; // 10 seconden voor API-check
-        // 5 minuten in milliseconden
+        // AANGEPAST: Polling interval is nu 15 seconden zoals gevraagd.
+        const API_POLLING_INTERVAL = 15000; 
         const FIVE_MINUTE_LIMIT_MS = 5 * 60 * 1000; 
         const PLACEHOLDER_ART = 'https://placehold.co/80x80/2D3748/C084FC?text=LP';
+        const FULLSCREEN_PLACEHOLDER_ART = 'https://placehold.co/320x320/2D3748/F87171?text=PANDUO+VIBE';
         
         // Standaardteksten
         const NOT_SHOWN_TITLE_NL = 'Inactief';
@@ -508,7 +534,8 @@
             sourceNl: '',
             sourceEn: '',
             isLive: false,
-            isActive: false // Binnen de 5-minuten limiet OF live
+            isActive: false, // Binnen de 5-minuten limiet OF live
+            lastCheckTime: 'Nooit'
         };
 
         /**
@@ -526,16 +553,14 @@
                 if (artists && artists.length > 0) {
                     const renderList = (lang) => {
                         const listEl = document.getElementById(`obsession-list-${lang}`);
-                        listEl.innerHTML = ''; // Clear previous content
+                        listEl.innerHTML = ''; 
 
                         artists.forEach((artist, index) => {
                             const listItem = document.createElement('li');
-                            // Tailwind classes for styling the list item
                             listItem.className = 'flex justify-between items-center p-2 bg-gray-700/30 rounded-md';
                             
                             const rank = index + 1;
                             
-                            // Link naar Last.fm profiel van de artiest
                             const artistLink = artist.url || '#'; 
                             const playcount = artist.playcount.toLocaleString('en-US');
 
@@ -579,37 +604,45 @@
             const lpTrack = document.getElementById('lp-track');
             const lpArtist = document.getElementById('lp-artist');
             const lpSource = document.getElementById('lp-source');
+            const fullscreenCheckTime = document.getElementById('fullscreen-last-check');
             const currentLang = localStorage.getItem('language') || 'nl';
 
             if (show && currentTrack.isActive) {
                 // Toon de modal
                 overlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden'; // Voorkom scrollen in de achtergrond
+                document.body.style.overflow = 'hidden'; 
                 
-                // Vul de details in
-                lpTrack.textContent = currentTrack.name;
-                lpArtist.textContent = currentTrack.artist;
-                lpArt.src = currentTrack.artUrl;
+                // Vul de details in (gebruik FALLBACK voor de LP art als er geen track is)
+                lpTrack.textContent = currentTrack.name || (currentLang === 'nl' ? 'Niet aan het luisteren' : 'Not currently listening');
+                lpArtist.textContent = currentTrack.artist || (currentLang === 'nl' ? 'Status Onbekend' : 'Status Unknown');
+                lpArt.src = currentTrack.artUrl || FULLSCREEN_PLACEHOLDER_ART;
                 lpSource.textContent = currentLang === 'nl' ? currentTrack.sourceNl : currentTrack.sourceEn;
+                fullscreenCheckTime.textContent = currentTrack.lastCheckTime;
 
                 // Start het spinnen alleen als de stream LIVE is
-                if (currentTrack.isLive) {
+                if (currentTrack.isLive && currentTrack.isActive) {
                     lpArt.classList.add('lp-spinning');
+                    lpArt.style.opacity = '1';
                 } else {
                     lpArt.classList.remove('lp-spinning');
+                    // Grijze LP als hij niet draait en inactief is
+                    if (!currentTrack.isActive) {
+                        lpArt.style.opacity = '0.7'; 
+                    } else {
+                        lpArt.style.opacity = '1'; 
+                    }
                 }
 
             } else {
                 // Verberg de modal
                 overlay.classList.add('hidden');
-                document.body.style.overflow = ''; // Herstel scrollen
+                document.body.style.overflow = ''; 
                 lpArt.classList.remove('lp-spinning');
             }
         }
         
         /**
          * Functie om de taal te wisselen.
-         * Verbergt ook de knop voor de taal die al actief is.
          */
         function toggleLanguage(lang) {
             const dutchContent = document.getElementById('dutch-content');
@@ -630,6 +663,10 @@
                 toggleEn.classList.add('hidden');
                 localStorage.setItem('language', 'nl');
             }
+            // Zorg ervoor dat de fullscreen player direct de juiste taal toont als hij open is
+            if (!document.getElementById('fullscreen-overlay').classList.contains('hidden')) {
+                 toggleFullscreenPlayer(true); 
+            }
         }
         
         /**
@@ -637,6 +674,11 @@
          */
         async function fetchLastFmStatus() {
             const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=1`;
+            
+            // Tijdstempel voor de check
+            const now = new Date();
+            const checkTime = now.toLocaleTimeString('nl-NL');
+            currentTrack.lastCheckTime = checkTime;
 
             // Reset de globale track status
             currentTrack.isLive = false;
@@ -662,6 +704,12 @@
                 let trackName = '';
                 let artistName = '';
                 let albumArtUrl = PLACEHOLDER_ART; 
+                
+                // Standaardwaarden voor het geval er geen tracks zijn of de laatste scrobble te oud is
+                currentTrack.name = '';
+                currentTrack.artist = '';
+                currentTrack.artUrl = PLACEHOLDER_ART;
+
 
                 if (tracks && tracks.length > 0) {
                     const track = tracks[0];
@@ -689,8 +737,10 @@
 
                         if (timeDifferenceMs < FIVE_MINUTE_LIMIT_MS) {
                             currentTrack.isActive = true;
-                            currentTrack.sourceNl = 'Laatst gespeeld (minder dan 5m geleden)';
-                            currentTrack.sourceEn = 'Last Played (less than 5m ago)';
+                            // Bereken hoe lang geleden
+                            const minutesAgo = Math.floor(timeDifferenceMs / (60 * 1000));
+                            currentTrack.sourceNl = `Laatst gespeeld (${minutesAgo} min geleden)`;
+                            currentTrack.sourceEn = `Last Played (${minutesAgo} min ago)`;
                         }
                     }
                     
@@ -738,6 +788,12 @@
                 // Update voor beide talen
                 updateUI('nl', currentTrack.isActive);
                 updateUI('en', currentTrack.isActive);
+                
+                // BELANGRIJK: Update de fullscreen player als deze open is!
+                const isFullscreenOpen = !document.getElementById('fullscreen-overlay').classList.contains('hidden');
+                if (isFullscreenOpen) {
+                    toggleFullscreenPlayer(true); 
+                }
 
             } catch (error) {
                 console.error("Fatale Fout bij Last.fm:", error);
@@ -758,7 +814,9 @@
 
             // 3. Start de Now Playing Polling
             fetchLastFmStatus();
-            apiPollingInterval = setInterval(fetchLastFmStatus, API_POLLING_INTERVAL);
+            // AANGEPAST: Polling elke 15 seconden
+            apiPollingInterval = setInterval(fetchLastFmStatus, API_POLLING_INTERVAL); 
         });
     </script>
 </body>
+</html>
