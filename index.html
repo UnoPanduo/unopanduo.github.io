@@ -93,99 +93,84 @@
         .language-button:hover {
             background-color: #DDAAFA;
         }
-
-        /* FULLSCREEN MODAAL STYLING */
-        #fullscreen-player-modal {
+        
+        /* Full-screen Overlay Styling */
+        #fullscreen-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #000000;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
             z-index: 50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.3s ease-in-out;
+            transition: opacity 0.3s ease;
         }
-        
-        #fullscreen-player-modal.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        /* Vinyl Effect Container */
-        #fs-art-container {
-            position: relative;
-            border-radius: 50%; 
-            /* De 'vinyl' rand */
-            background: #0a0a0a; 
-            padding: 1.5rem; /* Ruimte tussen art en record rand */
-            box-shadow: 0 0 0 10px #4A5568, /* Grijze vinyl ring */
-                        0 0 0 15px #1A202C; /* Buitenste donkere ring */
-            transition: transform 0.5s ease-out;
-        }
-        
-        /* Album Art binnen de container */
-        #fs-art {
-            border-radius: 0.5rem; /* Zachte hoeken voor de hoes */
-        }
-        
-        /* Draai-animatie (alleen actief bij Vinyl) */
-        .vinyl-effect-spin {
-            animation: vinylSpin 6s linear infinite;
-        }
-        @keyframes vinylSpin {
+
+        /* LP Animation */
+        @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
 
-        /* Responsieve aanpassing voor Landscape/Desktop */
-        @media (orientation: landscape), (min-width: 1024px) {
-            #fs-content-wrapper {
-                flex-direction: row;
-                max-width: 90vw;
-                max-height: 80vh;
-                align-items: center;
-                text-align: left;
-                padding-left: 2rem; /* Ruimte aan de zijkant */
-            }
-            /* Pas de art grootte aan in landscape */
-            #fs-art {
-                width: 320px;
-                height: 320px;
-            }
-            #fs-text-info {
-                margin-left: 4rem; /* Ruimte tussen art en tekst */
-                margin-top: 0;
-                text-align: left;
-            }
-        }
-        
-        /* Standaard (Portrait/Mobile) styling voor de FS content */
-        #fs-content-wrapper {
-            display: flex;
-            flex-direction: column; 
-            align-items: center;
-            justify-content: center;
-            max-width: 90vw;
-            max-height: 90vh;
-            text-align: center;
+        .lp-disk {
+            border-radius: 50%;
+            transition: transform 0.3s ease-out;
+            box-shadow: 0 0 40px rgba(192, 132, 252, 0.5); /* Zachte gloed */
         }
 
-        #fs-text-info {
-            margin-top: 2rem;
+        .lp-spinning {
+            animation: spin 3s linear infinite;
+        }
+
+        /* Center hole effect */
+        .lp-disk::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 15%;
+            height: 15%;
+            background-color: #0A0A0A;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid #C084FC;
         }
     </style>
 </head>
 <body class="p-4 sm:p-8">
+
+    <!-- FULLSCREEN LP OVERLAY -->
+    <div id="fullscreen-overlay" class="hidden flex flex-col items-center justify-center p-8">
+        <button onclick="toggleFullscreenPlayer(false)" class="absolute top-4 right-4 p-3 rounded-full bg-gray-700/50 hover:bg-gray-700 transition">
+            <!-- Close Icon (X) -->
+            <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+
+        <div class="text-center max-w-lg w-full">
+            <!-- LP Disk -->
+            <div class="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto mb-8">
+                <img id="lp-art" class="lp-disk w-full h-full object-cover" src="" alt="Album Art LP">
+            </div>
+
+            <!-- Track Info -->
+            <h4 id="lp-track" class="font-bold text-2xl sm:text-3xl text-white truncate px-4"></h4>
+            <p id="lp-artist" class="text-gray-300 text-lg sm:text-xl truncate px-4 mb-2"></p>
+            <p id="lp-source" class="text-sm text-purple-400 font-medium"></p>
+        </div>
+    </div>
+    <!-- EINDE FULLSCREEN LP OVERLAY -->
 
     <!-- HOOFD INHOUD -->
     <div class="container-card p-6 sm:p-10 max-w-2xl lg:max-w-4xl w-full mx-auto">
         
         <!-- Language Switch Button (Gedeeld voor beide talen) -->
         <div class="flex justify-end mb-6">
+            <!-- Knop om naar EN te schakelen (zichtbaar in NL weergave) -->
             <button id="lang-toggle-nl" class="language-button" onclick="toggleLanguage('en')">English Version</button>
+            <!-- Knop om naar NL te schakelen (zichtbaar in EN weergave) -->
             <button id="lang-toggle-en" class="language-button hidden" onclick="toggleLanguage('nl')">Nederlandse Versie</button>
         </div>
 
@@ -197,49 +182,47 @@
                 <p class="mt-2 text-sm sm:text-base text-gray-400">Navigeren door het digitale klanklandschap.</p>
             </div>
 
-            <!-- Muziek & Vibe Sectie -->
+            <!-- Muziek & Vibe Sectie (Focused on Last.fm) -->
             <div>
                 <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Muziek & Vibe</h2>
-                <div class="w-full flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
-                    <!-- Huidige Vibe - Spotify Embed (links) -->
-                    <div id="spotify-vibe-nl" class="w-full md:w-1/2">
-                        <h3 class="text-xl font-bold mb-4">Huidige Vibe</h3>
-                        <div class="w-full">
-                            <!-- Spotify Embed: Hoogte 152px met expliciete scrolling="no" om de scrollbar te verwijderen -->
-                            <iframe id="spotify-embed-nl" style="border-radius:12px" src="" width="100%" height="152" frameBorder="0" scrolling="no" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                        </div>
+                
+                <!-- Last.fm Obsessie (Top Artiesten) -->
+                <div class="w-full mb-8 p-4 bg-gray-800 rounded-lg border border-purple-800/50">
+                    <h3 class="text-xl font-bold mb-4 text-purple-300">Last.fm Obsessie (Top Artiesten)</h3>
+                    <ul id="obsession-list-nl" class="space-y-2 text-gray-300">
+                        <!-- Wordt gevuld door JavaScript -->
+                        <li class="text-gray-500">Laden top artiesten...</li>
+                    </ul>
+                </div>
+
+                <!-- Now Playing - Last.fm API -->
+                <div class="w-full">
+                    <div class="flex justify-between items-center mb-4">
+                         <!-- Dynamische Titel: Wordt 'Momenteel aan het luisteren' of 'Inactief' -->
+                        <h3 id="now-playing-title-nl" class="text-xl font-bold">Laden...</h3>
+                        <!-- Fullscreen Toggle Button (NL) -->
+                        <button id="fullscreen-toggle-nl" onclick="toggleFullscreenPlayer(true)" class="hidden p-2 bg-gray-700/50 hover:bg-gray-700 rounded-full transition" title="Volledig scherm weergave">
+                            <!-- View Icon -->
+                            <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
                     </div>
-
-                    <!-- Now Playing - Last.fm API (rechts) -->
-                    <div class="w-full md:w-1/2">
-                        <!-- Dynamische Titel: Now Playing via Streaming of Now Playing LP -->
-                        <h3 id="now-playing-title-nl" class="text-xl font-bold mb-4">Now Playing via Streaming</h3>
-                        <div id="now-playing-container-nl" class="flex flex-col items-center justify-center p-4 sm:p-6 bg-gray-800 rounded-lg shadow-inner min-h-[152px]">
-                            <p id="now-playing-status-nl" class="text-gray-400">Laden...</p>
-                            
-                            <!-- Track Info met Album Art (zichtbaar bij actieve track) -->
-                            <div id="now-playing-info-nl" class="hidden flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full">
-                                <!-- Album Art -->
-                                <img id="now-playing-art-nl" class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg shadow-lg flex-shrink-0" src="" alt="Album Art">
-                                <!-- Text Info -->
-                                <div class="flex-grow min-w-0 text-center sm:text-left">
-                                    <h4 id="now-playing-track-nl" class="font-bold text-base sm:text-lg text-white truncate"></h4>
-                                    <p id="now-playing-artist-nl" class="text-gray-300 text-sm truncate"></p>
-                                    <p id="now-playing-source-nl" class="text-xs text-purple-400 mt-1"></p>
-                                    
-                                    <!-- Fullscreen Knop -->
-                                    <button id="fullscreen-btn-nl" onclick="openFullscreenPlayer('nl')" class="hidden mt-2 px-2 py-1 text-xs bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-full transition-colors">
-                                        Volledig Scherm
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Dit div wordt getoond als er NIETS wordt afgespeeld -->
-                            <div id="now-playing-none-nl" class="hidden text-center max-w-full">
-                                <h4 class="font-bold text-lg text-white">Speelt momenteel niets.</h4>
-                                <p class="text-xs text-gray-400 mt-2">
-                                    Deze sectie toont ofwel een actieve stream, of de laatst gespeelde plaat indien minder dan **5 minuten** geleden gescrobbeld.
-                                </p>
+                   
+                    <div id="now-playing-container-nl" class="flex flex-col items-center justify-center p-4 sm:p-6 bg-gray-800 rounded-lg shadow-inner min-h-[152px]">
+                        <!-- Status tekst wanneer verborgen of laden -->
+                        <p id="now-playing-status-nl" class="text-gray-400 text-center">Laden...</p>
+                        
+                        <!-- Track Info met Album Art (zichtbaar bij actieve track) -->
+                        <div id="now-playing-info-nl" class="hidden flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full">
+                            <!-- Album Art -->
+                            <img id="now-playing-art-nl" class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg shadow-lg flex-shrink-0" src="" alt="Album Art">
+                            <!-- Text Info -->
+                            <div class="flex-grow min-w-0 text-center sm:text-left">
+                                <h4 id="now-playing-track-nl" class="font-bold text-base sm:text-lg text-white truncate"></h4>
+                                <p id="now-playing-artist-nl" class="text-gray-300 text-sm truncate"></p>
+                                <p id="now-playing-source-nl" class="text-xs text-purple-400 mt-1"></p>
                             </div>
                         </div>
                     </div>
@@ -351,49 +334,47 @@
                 <p class="mt-2 text-sm sm:text-base text-gray-400">Navigating the digital soundscape.</p>
             </div>
 
-            <!-- Music & Vibe Section -->
+            <!-- Music & Vibe Section (Focused on Last.fm) -->
             <div>
                 <h2 class="text-2xl sm:text-3xl font-bold section-title mb-6">Music & Vibe</h2>
-                <div class="w-full flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
-                    <!-- Current Vibe - Spotify Embed (links) -->
-                    <div id="spotify-vibe-en" class="w-full md:w-1/2">
-                        <h3 class="text-xl font-bold mb-4">Current Vibe</h3>
-                        <div class="w-full">
-                            <!-- Spotify Embed: Height 152px with explicit scrolling="no" to remove the scrollbar -->
-                            <iframe id="spotify-embed-en" style="border-radius:12px" src="" width="100%" height="152" frameBorder="0" scrolling="no" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                        </div>
+                
+                 <!-- Last.fm Obsession (Top Artists) -->
+                 <div class="w-full mb-8 p-4 bg-gray-800 rounded-lg border border-purple-800/50">
+                    <h3 class="text-xl font-bold mb-4 text-purple-300">Last.fm Obsession (Top Artists)</h3>
+                    <ul id="obsession-list-en" class="space-y-2 text-gray-300">
+                        <!-- Filled by JavaScript -->
+                        <li class="text-gray-500">Loading top artists...</li>
+                    </ul>
+                </div>
+
+                <!-- Now Playing - Last.fm API -->
+                <div class="w-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <!-- Dynamic Title: Will be 'Currently Listening' or 'Inactive' -->
+                        <h3 id="now-playing-title-en" class="text-xl font-bold">Loading...</h3>
+                        <!-- Fullscreen Toggle Button (EN) -->
+                        <button id="fullscreen-toggle-en" onclick="toggleFullscreenPlayer(true)" class="hidden p-2 bg-gray-700/50 hover:bg-gray-700 rounded-full transition" title="Full screen view">
+                             <!-- View Icon -->
+                             <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
                     </div>
-
-                    <!-- Now Playing - Last.fm API (rechts) -->
-                    <div class="w-full md:w-1/2">
-                        <!-- Dynamische Titel: Now Playing via Streaming of Now Playing on Vinyl -->
-                        <h3 id="now-playing-title-en" class="text-xl font-bold mb-4">Now Playing via Streaming</h3>
-                        <div id="now-playing-container-en" class="flex flex-col items-center justify-center p-4 sm:p-6 bg-gray-800 rounded-lg shadow-inner min-h-[152px]">
-                            <p id="now-playing-status-en" class="text-gray-400">Loading...</p>
-                            
-                            <!-- Track Info met Album Art (zichtbaar bij actieve track) -->
-                            <div id="now-playing-info-en" class="hidden flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full">
-                                <!-- Album Art -->
-                                <img id="now-playing-art-en" class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg shadow-lg flex-shrink-0" src="" alt="Album Art">
-                                <!-- Text Info -->
-                                <div class="flex-grow min-w-0 text-center sm:text-left">
-                                    <h4 id="now-playing-track-en" class="font-bold text-base sm:text-lg text-white truncate"></h4>
-                                    <p id="now-playing-artist-en" class="text-gray-300 text-sm truncate"></p>
-                                    <p id="now-playing-source-en" class="text-xs text-purple-400 mt-1"></p>
-
-                                    <!-- Fullscreen Button -->
-                                    <button id="fullscreen-btn-en" onclick="openFullscreenPlayer('en')" class="hidden mt-2 px-2 py-1 text-xs bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-full transition-colors">
-                                        Full Screen
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Dit div wordt getoond als er NIETS wordt afgespeeld -->
-                            <div id="now-playing-none-en" class="hidden text-center max-w-full">
-                                <h4 class="font-bold text-lg text-white">Nothing playing right now.</h4>
-                                <p class="text-xs text-gray-400 mt-2">
-                                    This section shows either an active stream, or the last played vinyl record if scrobbled less than **5 minutes** ago.
-                                </p>
+                    
+                    <div id="now-playing-container-en" class="flex flex-col items-center justify-center p-4 sm:p-6 bg-gray-800 rounded-lg shadow-inner min-h-[152px]">
+                        <!-- Status text when hidden or loading -->
+                        <p id="now-playing-status-en" class="text-gray-400 text-center">Loading...</p>
+                        
+                        <!-- Track Info met Album Art (visible when track is active) -->
+                        <div id="now-playing-info-en" class="hidden flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full">
+                            <!-- Album Art -->
+                            <img id="now-playing-art-en" class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg shadow-lg flex-shrink-0" src="" alt="Album Art">
+                            <!-- Text Info -->
+                            <div class="flex-grow min-w-0 text-center sm:text-left">
+                                <h4 id="now-playing-track-en" class="font-bold text-base sm:text-lg text-white truncate"></h4>
+                                <p id="now-playing-artist-en" class="text-gray-300 text-sm truncate"></p>
+                                <p id="now-playing-source-en" class="text-xs text-purple-400 mt-1"></p>
                             </div>
                         </div>
                     </div>
@@ -498,119 +479,143 @@
         </div>
     </div>
     
-    <!-- FULLSCREEN MODAAL SPELER -->
-    <div id="fullscreen-player-modal" class="hidden text-center" onclick="closeFullscreenPlayer()">
-        <button class="absolute top-4 right-4 text-white text-3xl font-light p-2 rounded-full hover:bg-gray-800 transition-colors" aria-label="Sluiten">
-            &times;
-        </button>
-
-        <div id="fs-content-wrapper" class="p-8">
-            <!-- Album Art with Vinyl Effect -->
-            <div id="fs-art-container" class="relative">
-                <img id="fs-art" class="w-64 h-64 sm:w-80 sm:h-80 rounded-lg shadow-2xl flex-shrink-0" src="" alt="Album Art">
-            </div>
-
-            <!-- Text Info -->
-            <div id="fs-text-info" class="mt-8 text-center">
-                <p id="fs-source" class="text-xl sm:text-2xl text-purple-400 font-bold mb-4"></p>
-                <h1 id="fs-track" class="text-5xl sm:text-7xl font-extrabold text-white mb-2 max-w-full leading-tight"></h1>
-                <p id="fs-artist" class="text-2xl sm:text-3xl text-gray-300 max-w-full"></p>
-            </div>
-        </div>
-    </div>
-
-
     <script>
-        // 🎼 PAS DEZE VARIABELE AAN OM DE SPOTIFY TRACK TE WIJZIGEN
-        const SPOTIFY_URI = '4wxJZae52sNfAx6K5FTajL';
-        // -----------------------------------------------------------
-
-        const SPOTIFY_BASE_URL = 'https://open.spotify.com/embed/track/';
-        const LASTFM_API_KEY = 'a1e23f2502881d4d5ce462128b81bb7b';
+        // !!! LAST.FM INSTELLINGEN (ALTIJD CONTROLEREN) !!!
+        const LASTFM_API_KEY = 'a1e23f2502881d4d5ce462128b81bb7b'; 
         const LASTFM_USERNAME = 'ItsDapanda';
         
         // Timerinstellingen
         const API_POLLING_INTERVAL = 10000; // 10 seconden voor API-check
-        const VINYL_TIME_LIMIT_MS = 5 * 60 * 1000; // 5 minuten
+        // 5 minuten in milliseconden
+        const FIVE_MINUTE_LIMIT_MS = 5 * 60 * 1000; 
         const PLACEHOLDER_ART = 'https://placehold.co/80x80/2D3748/C084FC?text=LP';
-
-        // Globale staat voor de live timer
-        let vinylScrobbleTime = null; 
-        let apiPollingInterval = null;    // Interval voor de 10s API check
-        let liveTimerInterval = null;     // Interval voor de 1s visuele countdown
         
         // Standaardteksten
-        const DEFAULT_TITLE_NL = 'Now Playing via Streaming';
-        const DEFAULT_TITLE_EN = 'Now Playing via Streaming';
-        const VINYL_TITLE_NL = 'Now Playing LP';
-        const VINYL_TITLE_EN = 'Now Playing on Vinyl';
-        const STREAMING_SOURCE_NL = 'Momenteel aan het streamen';
-        const STREAMING_SOURCE_EN = 'Currently streaming';
-        const VINYL_SOURCE_NL = `Laatst gestart nummer:`; 
-        const VINYL_SOURCE_EN = `Last started track:`; 
+        const NOT_SHOWN_TITLE_NL = 'Inactief';
+        const NOT_SHOWN_TITLE_EN = 'Inactive';
+        const NOT_SHOWN_STATUS_NL = 'Geen live stream, en de laatste scrobble is meer dan 5 minuten geleden.';
+        const NOT_SHOWN_STATUS_EN = 'No live stream, and the last scrobble was more than 5 minutes ago.';
+        const PLAYING_TITLE_NL = 'Momenteel aan het luisteren';
+        const PLAYING_TITLE_EN = 'Currently Listening';
         
-        // Functie om de 1s live timer bij te werken (zorgt voor de vloeiende beweging)
-        function updateTimer() {
-            if (vinylScrobbleTime === null) {
-                // Vinyl is niet actief, dus stop de 1s timer
-                if (liveTimerInterval) {
-                    clearInterval(liveTimerInterval);
-                    liveTimerInterval = null;
+        let apiPollingInterval = null; 
+
+        // Globale variabelen om de huidige staat van de track op te slaan
+        let currentTrack = {
+            name: '',
+            artist: '',
+            artUrl: PLACEHOLDER_ART,
+            sourceNl: '',
+            sourceEn: '',
+            isLive: false,
+            isActive: false // Binnen de 5-minuten limiet OF live
+        };
+
+        /**
+         * Haalt de Last.fm Top Artiesten op en vult de 'Obsessie' lijst.
+         */
+        async function fetchLastFmObsession() {
+            const url = `https://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=5`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const artists = data.topartists?.artist;
+
+                if (artists && artists.length > 0) {
+                    const renderList = (lang) => {
+                        const listEl = document.getElementById(`obsession-list-${lang}`);
+                        listEl.innerHTML = ''; // Clear previous content
+
+                        artists.forEach((artist, index) => {
+                            const listItem = document.createElement('li');
+                            // Tailwind classes for styling the list item
+                            listItem.className = 'flex justify-between items-center p-2 bg-gray-700/30 rounded-md';
+                            
+                            const rank = index + 1;
+                            
+                            // Link naar Last.fm profiel van de artiest
+                            const artistLink = artist.url || '#'; 
+                            const playcount = artist.playcount.toLocaleString('en-US');
+
+                            listItem.innerHTML = `
+                                <a href="${artistLink}" target="_blank" class="text-sm font-medium hover:text-purple-400 transition truncate mr-4">
+                                    <span class="font-bold text-red-300 mr-2">${rank}.</span> ${artist.name}
+                                </a>
+                                <span class="text-xs text-gray-400 font-mono flex-shrink-0">${playcount} plays</span>
+                            `;
+                            listEl.appendChild(listItem);
+                        });
+                    };
+                    
+                    renderList('nl');
+                    renderList('en');
+
+                } else {
+                    const messageNl = 'Geen top artiesten gevonden.';
+                    const messageEn = 'No top artists found.';
+                    document.getElementById('obsession-list-nl').innerHTML = `<li class="text-gray-500 p-2">${messageNl}</li>`;
+                    document.getElementById('obsession-list-en').innerHTML = `<li class="text-gray-500 p-2">${messageEn}</li>`;
                 }
-                return;
-            }
 
-            const now = Date.now();
-            const elapsedMs = now - vinylScrobbleTime;
-
-            // Controleer of de 5 minuten limiet is bereikt
-            if (elapsedMs > VINYL_TIME_LIMIT_MS) {
-                // Timer is verlopen, forceer een nieuwe API check die de status zal updaten
-                if (liveTimerInterval) {
-                    clearInterval(liveTimerInterval);
-                    liveTimerInterval = null;
-                }
-                closeFullscreenPlayer(); // Sluit fullscreen als de tijd om is
-                fetchLastFmStatus(); 
-                return;
-            }
-            
-            // Bereken minuten en seconden
-            const elapsedMinutes = Math.floor(elapsedMs / 60000);
-            const elapsedSeconds = Math.floor((elapsedMs % 60000) / 1000);
-
-            // Formatteer de verstreken tijd
-            const timeFormatNl = `(${elapsedMinutes}m ${elapsedSeconds}s geleden)`;
-            const timeFormatEn = `(${elapsedMinutes}m ${elapsedSeconds}s ago)`;
-
-            // Update UI elementen voor beide talen (hoofdweergave)
-            const sourceElNl = document.getElementById(`now-playing-source-nl`);
-            const sourceElEn = document.getElementById(`now-playing-source-en`);
-
-            if (sourceElNl) {
-                sourceElNl.textContent = `${VINYL_SOURCE_NL} ${timeFormatNl}`;
-            }
-            if (sourceElEn) {
-                sourceElEn.textContent = `${VINYL_SOURCE_EN} ${timeFormatEn}`;
-            }
-
-            // Update Fullscreen modaal als deze open is
-            const fsModal = document.getElementById('fullscreen-player-modal');
-            if (!fsModal.classList.contains('hidden')) {
-                const fsSource = document.getElementById('fs-source');
-                const currentLang = localStorage.getItem('language') || 'en';
-                const fsPrefix = currentLang === 'nl' ? VINYL_SOURCE_NL : VINYL_SOURCE_EN;
-                const fsTimeFormat = currentLang === 'nl' ? timeFormatNl : timeFormatEn;
-                fsSource.textContent = `${fsPrefix} ${fsTimeFormat}`;
+            } catch (error) {
+                console.error("Fout bij het laden van Last.fm Top Artiesten:", error);
+                const errorHtmlNl = '<li class="text-red-400 p-2">Fout: Kon Last.fm obsessie niet laden.</li>';
+                const errorHtmlEn = '<li class="text-red-400 p-2">Error: Could not load Last.fm obsession.</li>';
+                document.getElementById('obsession-list-nl').innerHTML = errorHtmlNl;
+                document.getElementById('obsession-list-en').innerHTML = errorHtmlEn;
             }
         }
 
-        // Functie om de taal te wisselen
+
+        /**
+         * Schakelt de full-screen LP-speler aan/uit en vult de details in.
+         * @param {boolean} show True om te tonen, False om te verbergen.
+         */
+        function toggleFullscreenPlayer(show) {
+            const overlay = document.getElementById('fullscreen-overlay');
+            const lpArt = document.getElementById('lp-art');
+            const lpTrack = document.getElementById('lp-track');
+            const lpArtist = document.getElementById('lp-artist');
+            const lpSource = document.getElementById('lp-source');
+            const currentLang = localStorage.getItem('language') || 'nl';
+
+            if (show && currentTrack.isActive) {
+                // Toon de modal
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Voorkom scrollen in de achtergrond
+                
+                // Vul de details in
+                lpTrack.textContent = currentTrack.name;
+                lpArtist.textContent = currentTrack.artist;
+                lpArt.src = currentTrack.artUrl;
+                lpSource.textContent = currentLang === 'nl' ? currentTrack.sourceNl : currentTrack.sourceEn;
+
+                // Start het spinnen alleen als de stream LIVE is
+                if (currentTrack.isLive) {
+                    lpArt.classList.add('lp-spinning');
+                } else {
+                    lpArt.classList.remove('lp-spinning');
+                }
+
+            } else {
+                // Verberg de modal
+                overlay.classList.add('hidden');
+                document.body.style.overflow = ''; // Herstel scrollen
+                lpArt.classList.remove('lp-spinning');
+            }
+        }
+        
+        /**
+         * Functie om de taal te wisselen.
+         * Verbergt ook de knop voor de taal die al actief is.
+         */
         function toggleLanguage(lang) {
             const dutchContent = document.getElementById('dutch-content');
             const englishContent = document.getElementById('english-content');
-            const toggleNl = document.getElementById('lang-toggle-nl');
-            const toggleEn = document.getElementById('lang-toggle-en');
+            const toggleNl = document.getElementById('lang-toggle-nl'); 
+            const toggleEn = document.getElementById('lang-toggle-en'); 
 
             if (lang === 'en') {
                 dutchContent.classList.add('hidden');
@@ -621,70 +626,45 @@
             } else {
                 dutchContent.classList.remove('hidden');
                 englishContent.classList.add('hidden');
-                toggleNl.classList.remove('hidden');
+                toggleNl.classList.remove('hidden'); 
                 toggleEn.classList.add('hidden');
                 localStorage.setItem('language', 'nl');
             }
-            
-            // Zorg ervoor dat de fullscreen mode de juiste taal toont indien open
-            if (!document.getElementById('fullscreen-player-modal').classList.contains('hidden')) {
-                if (vinylScrobbleTime !== null) {
-                    updateTimer(); // Roept de timer update aan die de taal afhandelt
-                } else {
-                    // Update voor streaming source (die statisch is)
-                    const fsSource = document.getElementById('fs-source');
-                    fsSource.textContent = lang === 'nl' ? STREAMING_SOURCE_NL : STREAMING_SOURCE_EN;
-                }
-            }
         }
-
-        // Functie om de Fullscreen Player te openen
-        function openFullscreenPlayer(lang) {
-            const artEl = document.getElementById(`now-playing-art-${lang}`);
-            const trackEl = document.getElementById(`now-playing-track-${lang}`);
-            const artistEl = document.getElementById(`now-playing-artist-${lang}`);
-
-            const fsModal = document.getElementById('fullscreen-player-modal');
-            
-            // Kopieer gegevens naar het modaal
-            document.getElementById('fs-art').src = artEl.src;
-            document.getElementById('fs-track').textContent = trackEl.textContent;
-            document.getElementById('fs-artist').textContent = artistEl.textContent;
-            
-            // Source is dynamisch (timer) of statisch (streaming)
-            if (vinylScrobbleTime !== null) {
-                // Timer is actief, de updateTimer functie handelt de taal af
-                updateTimer(); 
-            } else {
-                document.getElementById('fs-source').textContent = lang === 'nl' ? STREAMING_SOURCE_NL : STREAMING_SOURCE_EN;
-            }
-
-            // Toon modaal
-            fsModal.classList.remove('hidden');
-        }
-
-        // Functie om de Fullscreen Player te sluiten
-        function closeFullscreenPlayer() {
-            const fsModal = document.getElementById('fullscreen-player-modal');
-            fsModal.classList.add('hidden');
-        }
-
-        // Functie om de Last.fm status op te halen en beide taalblokken bij te werken (10s polling)
+        
+        /**
+         * Haalt de Last.fm status op en werkt de UI bij op basis van de 5-minuten regel.
+         */
         async function fetchLastFmStatus() {
+            const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=1`;
+
+            // Reset de globale track status
+            currentTrack.isLive = false;
+            currentTrack.isActive = false;
+
+            const setErrorUI = (messageNl, messageEn) => {
+                ['nl', 'en'].forEach(lang => {
+                    document.getElementById(`now-playing-title-${lang}`).textContent = lang === 'nl' ? "Fout" : "Error";
+                    document.getElementById(`now-playing-status-${lang}`).textContent = lang === 'nl' ? messageNl : messageEn;
+                    document.getElementById(`now-playing-status-${lang}`).classList.remove('hidden');
+                    document.getElementById(`now-playing-info-${lang}`).classList.add('hidden');
+                    document.getElementById(`fullscreen-toggle-${lang}`).classList.add('hidden');
+                });
+            };
+
             try {
-                const response = await fetch(`https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=1`);
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP fout! Status: ${response.status}`);
                 const data = await response.json();
-                
-                const now = Date.now();
+                if (data.error) throw new Error(`Last.fm API gerapporteerde fout: ${data.message}`);
+
+                const tracks = data.recenttracks?.track;
                 let trackName = '';
                 let artistName = '';
                 let albumArtUrl = PLACEHOLDER_ART; 
-                let isPlaying = false;
-                let isRecentVinyl = false; 
-                let trackTimeMs = null; 
 
-                if (data.recenttracks && data.recenttracks.track && data.recenttracks.track.length > 0) {
-                    const track = data.recenttracks.track[0];
+                if (tracks && tracks.length > 0) {
+                    const track = tracks[0];
                     trackName = track.name;
                     artistName = track.artist['#text'];
 
@@ -692,171 +672,93 @@
                         albumArtUrl = track.image[3]['#text'] || PLACEHOLDER_ART;
                     }
 
-                    // 1. Controleer of de track momenteel wordt afgespeeld (Streaming)
-                    if (track['@attr'] && track['@attr'].nowplaying) {
-                        isPlaying = true;
-                        // Als er nu gestreamd wordt, moet de vinylScrobbleTime en timer gestopt worden
-                        trackTimeMs = now; // Stel de scrobble tijd in op nu voor de streaming bron
-                    } 
+                    // 1. Controleer of de track momenteel live wordt afgespeeld
+                    const isPlayingLive = (track['@attr'] && track['@attr'].nowplaying === 'true');
                     
-                    // 2. Controleer of de track recentelijk via Vinyl is afgespeeld (tijd check)
-                    if (track.date && track.date.uts) {
-                        const scrobbleTime = parseInt(track.date.uts) * 1000;
-                        const timeDifference = now - scrobbleTime;
+                    if (isPlayingLive) {
+                        currentTrack.isActive = true;
+                        currentTrack.isLive = true;
+                        currentTrack.sourceNl = 'Live Stream (Muziekdienst)';
+                        currentTrack.sourceEn = 'Live Stream (Music Service)';
+                    } 
+                    // 2. Controleer of de laatst gescrobbelde track minder dan 5 minuten geleden was
+                    else if (track.date && track.date.uts) {
+                        const trackTimestampMs = parseInt(track.date.uts) * 1000;
+                        const currentTimeMs = Date.now();
+                        const timeDifferenceMs = currentTimeMs - trackTimestampMs;
 
-                        // Een 'Scrobble' van een plaat wordt altijd getagd met 'Discogs', 'Vinyl', 'Rarities', etc.
-                        // We checken of het geen 'nowplaying' is, maar wel recentelijk gescrobbled.
-                        const isVinylScrobble = track.album['#text'].toLowerCase().includes('vinyl') || track.album['#text'].toLowerCase().includes('discogs');
-
-                        if (!isPlaying && timeDifference <= VINYL_TIME_LIMIT_MS && timeDifference > 0 && isVinylScrobble) {
-                            isRecentVinyl = true;
-                            trackTimeMs = scrobbleTime; // Gebruik de daadwerkelijke scrobble tijd
+                        if (timeDifferenceMs < FIVE_MINUTE_LIMIT_MS) {
+                            currentTrack.isActive = true;
+                            currentTrack.sourceNl = 'Laatst gespeeld (minder dan 5m geleden)';
+                            currentTrack.sourceEn = 'Last Played (less than 5m ago)';
                         }
                     }
-                }
+                    
+                    // Update globale track details
+                    currentTrack.name = trackName;
+                    currentTrack.artist = artistName;
+                    currentTrack.artUrl = albumArtUrl;
+
+                } 
                 
                 // Functie om de UI te updaten voor een specifieke taal
-                function updateUI(lang, isPlaying, isRecentVinyl, trackName, artistName, albumArtUrl, trackTimeMs) {
+                function updateUI(lang, show) {
                     const statusEl = document.getElementById(`now-playing-status-${lang}`);
                     const infoEl = document.getElementById(`now-playing-info-${lang}`);
-                    const noneEl = document.getElementById(`now-playing-none-${lang}`);
                     const trackEl = document.getElementById(`now-playing-track-${lang}`);
                     const artistEl = document.getElementById(`now-playing-artist-${lang}`);
                     const artEl = document.getElementById(`now-playing-art-${lang}`);
                     const sourceEl = document.getElementById(`now-playing-source-${lang}`);
                     const titleEl = document.getElementById(`now-playing-title-${lang}`);
-                    const spotifyVibeEl = document.getElementById(`spotify-vibe-${lang}`);
-                    const fullscreenBtn = document.getElementById(`fullscreen-btn-${lang}`);
-                    const fsArtContainer = document.getElementById('fs-art-container');
+                    const toggleButton = document.getElementById(`fullscreen-toggle-${lang}`);
                     
-                    const defaultTitle = lang === 'nl' ? DEFAULT_TITLE_NL : DEFAULT_TITLE_EN;
-                    const vinylTitle = lang === 'nl' ? VINYL_TITLE_NL : VINYL_TITLE_EN;
-                    const streamingSourceText = lang === 'nl' ? STREAMING_SOURCE_NL : STREAMING_SOURCE_EN;
-                    
-                    
-                    if (isPlaying || isRecentVinyl) {
-                        // Toon de Now Playing sectie
+                    if (show) {
+                        // Toon de actieve track
                         statusEl.classList.add('hidden');
-                        noneEl.classList.add('hidden');
                         infoEl.classList.remove('hidden');
-                        fullscreenBtn.classList.remove('hidden'); 
-                        trackEl.textContent = trackName;
-                        artistEl.textContent = artistName;
-                        artEl.src = albumArtUrl;
+                        toggleButton.classList.remove('hidden'); // Toon de fullscreen knop
+                        
+                        titleEl.textContent = lang === 'nl' ? PLAYING_TITLE_NL : PLAYING_TITLE_EN;
+                        trackEl.textContent = currentTrack.name;
+                        artistEl.textContent = currentTrack.artist;
+                        artEl.src = currentTrack.artUrl;
                         artEl.onerror = () => artEl.src = PLACEHOLDER_ART; 
-                        
-                        // Fullscreen Vinyl Spin Effect
-                        if (isRecentVinyl) {
-                            fsArtContainer.classList.add('vinyl-effect-spin');
-                        } else {
-                            fsArtContainer.classList.remove('vinyl-effect-spin');
-                        }
-                        
-                        // Logica voor Vinyl (live timer)
-                        if (isRecentVinyl) {
-                            titleEl.textContent = vinylTitle;
-                            sourceEl.textContent = (lang === 'nl' ? VINYL_SOURCE_NL : VINYL_SOURCE_EN);
-                            spotifyVibeEl.classList.add('hidden'); // Verberg Spotify
-                            
-                            // Start de 1s visuele timer als deze nog niet loopt
-                            vinylScrobbleTime = trackTimeMs; 
-                            if (!liveTimerInterval) {
-                                liveTimerInterval = setInterval(updateTimer, 1000); // Start 1s timer voor smooth update
-                            }
-                            updateTimer(); // Eerste update direct uitvoeren
-                        } else {
-                            // Logica voor Streaming/Geen Vinyl (statische bron)
-                            titleEl.textContent = defaultTitle;
-                            sourceEl.textContent = streamingSourceText;
-                            spotifyVibeEl.classList.remove('hidden'); 
-
-                            // Stop de 1s visuele timer
-                            vinylScrobbleTime = null;
-                            if (liveTimerInterval) {
-                                clearInterval(liveTimerInterval);
-                                liveTimerInterval = null;
-                            }
-                        }
+                        sourceEl.textContent = lang === 'nl' ? currentTrack.sourceNl : currentTrack.sourceEn;
                     } else {
-                        // Geen recente of huidige track
-                        statusEl.classList.add('hidden');
+                        // Toon de inactieve status
                         infoEl.classList.add('hidden');
-                        fullscreenBtn.classList.add('hidden'); 
-                        noneEl.classList.remove('hidden'); 
-                        titleEl.textContent = defaultTitle;
-                        spotifyVibeEl.classList.remove('hidden'); 
-
-                        // Timer Cleanup
-                        vinylScrobbleTime = null;
-                        if (liveTimerInterval) {
-                            clearInterval(liveTimerInterval);
-                            liveTimerInterval = null;
-                        }
-                        fsArtContainer.classList.remove('vinyl-effect-spin');
-                        closeFullscreenPlayer(); 
+                        statusEl.classList.remove('hidden');
+                        toggleButton.classList.add('hidden'); // Verberg de fullscreen knop
+                        
+                        titleEl.textContent = lang === 'nl' ? NOT_SHOWN_TITLE_NL : NOT_SHOWN_TITLE_EN;
+                        statusEl.textContent = lang === 'nl' ? NOT_SHOWN_STATUS_NL : NOT_SHOWN_STATUS_EN;
                     }
                 }
 
                 // Update voor beide talen
-                updateUI('nl', isPlaying, isRecentVinyl, trackName, artistName, albumArtUrl, trackTimeMs);
-                updateUI('en', isPlaying, isRecentVinyl, trackName, artistName, albumArtUrl, trackTimeMs);
-
+                updateUI('nl', currentTrack.isActive);
+                updateUI('en', currentTrack.isActive);
 
             } catch (error) {
-                console.error("Fout bij het ophalen van Last.fm-gegevens:", error);
-                // ... Foutafhandeling ... (onveranderd)
-                const statusNl = document.getElementById('now-playing-status-nl');
-                statusNl.textContent = "Fout bij het laden van gegevens.";
-                statusNl.classList.remove('hidden');
-                document.getElementById('now-playing-info-nl').classList.add('hidden');
-                document.getElementById('now-playing-none-nl').classList.add('hidden');
-                document.getElementById('spotify-vibe-nl').classList.remove('hidden');
-                document.getElementById('fullscreen-btn-nl').classList.add('hidden');
-                const statusEn = document.getElementById('now-playing-status-en');
-                statusEn.textContent = "Error loading data.";
-                statusEn.classList.remove('hidden');
-                document.getElementById('now-playing-info-en').classList.add('hidden');
-                document.getElementById('now-playing-none-en').classList.add('hidden');
-                document.getElementById('spotify-vibe-en').classList.remove('hidden');
-                document.getElementById('fullscreen-btn-en').classList.add('hidden');
-                
-                // Zorg ervoor dat de 1s timer stopt bij een fout
-                if (liveTimerInterval) {
-                    clearInterval(liveTimerInterval);
-                    liveTimerInterval = null;
-                }
-                vinylScrobbleTime = null;
-                document.getElementById('fs-art-container').classList.remove('vinyl-effect-spin');
-                closeFullscreenPlayer(); 
+                console.error("Fatale Fout bij Last.fm:", error);
+                const errorTextNl = "Fout: Last.fm gegevens konden niet geladen worden.";
+                const errorTextEn = "Error: Last.fm data failed to load.";
+                setErrorUI(errorTextNl, errorTextEn);
             }
         }
         
         // Initialisatie
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Stel de Spotify URI in
-            const nlIframe = document.getElementById('spotify-embed-nl');
-            const enIframe = document.getElementById('spotify-embed-en');
-
-            if (nlIframe) nlIframe.src = SPOTIFY_BASE_URL + SPOTIFY_URI;
-            if (enIframe) enIframe.src = SPOTIFY_BASE_URL + SPOTIFY_URI;
-
-            // 2. Stel de taal in
-            const savedLang = localStorage.getItem('language') || 'en'; 
+            // 1. Stel de taal in
+            const savedLang = localStorage.getItem('language') || 'nl'; 
             toggleLanguage(savedLang);
 
-            // 3. Start de 10s API Polling
+            // 2. Laad de Obsessie data (eenmalig)
+            fetchLastFmObsession(); 
+
+            // 3. Start de Now Playing Polling
             fetchLastFmStatus();
-            // Start de API polling interval (deze variabele is nu apart en duidelijk)
             apiPollingInterval = setInterval(fetchLastFmStatus, API_POLLING_INTERVAL);
-            
-            // 4. Sluiten van fullscreen met de ESC-toets
-            document.addEventListener('keydown', (e) => {
-                // Sluit de fullscreen-speler als op de ESC-toets wordt gedrukt
-                if (e.key === 'Escape') {
-                    closeFullscreenPlayer();
-                }
-            });
         });
     </script>
 </body>
-</html>
